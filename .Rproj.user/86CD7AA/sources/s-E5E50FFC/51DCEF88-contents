@@ -1,0 +1,32 @@
+https://swcarpentry.github.io/r-novice-inflammation/08-making-packages-R/
+
+library("devtools")
+library("roxygen2")
+setwd("C:/Users/Orestis/Google Drive/PROJECT/calibration for benefit for prediction models/R code calibration for benefit/")
+create_package("predcompare")
+setwd("./predcompare")
+document()
+setwd("..")
+
+install("predcompare")
+library("predcompare")
+?daw
+predcompare
+
+setwd("C:/Users/Orestis/Google Drive/PROJECT/calibration for benefit for prediction models/R code calibration for benefit/predcomp")
+
+
+
+remove.packages("predcalibr")
+
+install("predcomp")
+setwd("C:/Users/Orestis/Google Drive/PROJECT/calibration for benefit for prediction models/R code calibration for benefit/predcomp")
+load_all(".")
+simulate.data.cont(100)
+?bencalibr
+
+
+library(devtools) # Make sure that the devtools library is loaded
+install_github("esm-ispm-unibe-ch-REPRODUCIBLE/calibration_benefit");
+library(predcomp)
+simulate.data.binary

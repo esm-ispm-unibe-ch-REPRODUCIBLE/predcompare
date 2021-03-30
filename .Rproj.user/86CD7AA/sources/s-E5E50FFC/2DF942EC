@@ -1,0 +1,23 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1617122162510.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "2636421147",
+    "id" : "2DF942EC",
+    "lastKnownWriteTime" : 1617120739,
+    "last_content_update" : 1617120739,
+    "path" : "C:/Users/Orestis/Google Drive/PROJECT/calibration for benefit for prediction models/R code calibration for benefit/predcomp/R/predcompare.R",
+    "project_path" : null,
+    "properties" : {
+    },
+    "read_only" : false,
+    "read_only_alternatives" : [
+    ],
+    "relative_order" : 3,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

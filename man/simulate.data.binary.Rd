@@ -4,7 +4,7 @@
 \alias{simulate.data.binary}
 \title{Simulate binary}
 \usage{
-\method{simulate}{data.binary}(Npat)
+\method{simulate}{data.binary}(Npat = 100)
 }
 \arguments{
 \item{repeats}{A dataframe}
