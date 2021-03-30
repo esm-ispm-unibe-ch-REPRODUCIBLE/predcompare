@@ -1,0 +1,25 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1617122729908.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "3DC59ED0",
+    "lastKnownWriteTime" : 1617122739,
+    "last_content_update" : 1617122739652,
+    "path" : "C:/Users/Orestis/Google Drive/PROJECT/calibration for benefit for prediction models/calibration_benefit/R/simulate_continuous.R",
+    "project_path" : "R/simulate_continuous.R",
+    "properties" : {
+        "cursorPosition" : "9,7",
+        "scrollLine" : "0"
+    },
+    "read_only" : false,
+    "read_only_alternatives" : [
+    ],
+    "relative_order" : 4,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

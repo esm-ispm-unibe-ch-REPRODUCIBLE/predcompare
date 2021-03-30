@@ -2,18 +2,18 @@
     "collab_server" : "",
     "contents" : "",
     "created" : 1617122307916.000,
-    "dirty" : true,
+    "dirty" : false,
     "encoding" : "UTF-8",
     "folds" : "",
     "hash" : "0",
     "id" : "51DCEF88",
-    "lastKnownWriteTime" : 1617121876,
-    "last_content_update" : 1617122314418,
+    "lastKnownWriteTime" : 1617122527,
+    "last_content_update" : 1617122527658,
     "path" : "C:/Users/Orestis/OneDrive/Desktop/example for package.R",
     "project_path" : null,
     "properties" : {
-        "cursorPosition" : "29,68",
-        "scrollLine" : "17"
+        "cursorPosition" : "32,0",
+        "scrollLine" : "0"
     },
     "read_only" : false,
     "read_only_alternatives" : [

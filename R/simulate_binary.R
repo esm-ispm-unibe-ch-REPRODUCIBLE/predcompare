@@ -7,7 +7,7 @@
 #' temp1 <- F_to_C(50);
 #' temp2 <- F_to_C( c(50, 63, 23) );
 #' @export
-simulate.data.binary=function(Npat=100){
+simbinary=function(Npat=100){
   ### simulate covariates
   library(MASS)
 expit=function(x){ exp(x)/(1 + exp(x))}
