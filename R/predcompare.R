@@ -1,3 +1,12 @@
+#' Calibraton measures for benefit
+#'
+#' Calculates measures
+#' @param repeats A dataframe
+#' @return A table
+#' @examples 
+#' temp1 <- F_to_C(50);
+#' temp2 <- F_to_C( c(50, 63, 23) );
+#' @export
 predcompare=function(repeats=50, ### number of repeated uses of the algorithm
                      Ngroups=10, ### number of groups for the k-means analysis
                      X, ### a data frame of the covariates

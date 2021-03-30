@@ -1,9 +1,18 @@
+#' Calibration for benefit plots
+#'
+#' Produces plot
+#' @param data A dataframe
+#' @return Aplot
+#' @examples 
+#' temp1 <- F_to_C(50);
+#' temp2 <- F_to_C( c(50, 63, 23) );
+#' @export
 bencalibr=function(data=NULL, Ngroups=5, y.observed, treat, 
                    predicted.treat.0, predicted.treat.1 ,type="continuous", 
                    smoothing.function="rlm", measure = "RD"){
   ##smoothing function can be: lm, glm, gam, loess, rlm
   ##measure can be RD or logor
-  require(ggplot2)
+  library(ggplot2)
   se <- function(x) sd(x)/sqrt(length(x))
   nulldata=is.null(data)
   

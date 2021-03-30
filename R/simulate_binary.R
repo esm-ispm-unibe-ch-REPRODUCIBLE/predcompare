@@ -1,9 +1,17 @@
-expit<-function(x){ exp(x)/(1 + exp(x))}
-logit=function(x){l=log(x/(1-x)); return(l)}
-
-simulate.data.binary<-function(Npat){
+#' Simulate binary
+#'
+#' Calculates measures
+#' @param repeats A dataframe
+#' @return A table
+#' @examples 
+#' temp1 <- F_to_C(50);
+#' temp2 <- F_to_C( c(50, 63, 23) );
+#' @export
+simulate.data.binary=function(Npat){
   ### simulate covariates
-  
+  library(MASS)
+expit=function(x){ exp(x)/(1 + exp(x))}
+logit=function(x){l=log(x/(1-x)); return(l)}
   # observed true predictors
   x1x2<-mvrnorm(n = Npat, c(0,0), Sigma=matrix(c(1,0.2,0.2,1),2,2))
   simdat <- data.frame(x1=x1x2[,1]) # continuous covariate 1
