@@ -1,16 +1,33 @@
-#' Simulate binary
+#' Simulate data for a prediction model of a binary outcome
 #'
-#' Calculates measures
-#' @param repeats A dataframe
-#' @return A table
+#' This function generates a dataframe with 6 patient covariates and a binary outcome simulated from
+#' a model that uses the covariates.  
+#' @param Npat Number of patients to simulate.
+#' @return The function returns a dataframe with: 
+#' 
+#' x1, x2, x3, x4, x5, x6= patient covariates.
+#' 
+#' t= treatment assignment (0 for control, 1 for active).
+#' 
+#' logit.control= the logit of the probability of an outcome in the control treatment. 
+#' 
+#' logit.active= the logit of the probability of an outcome in the active treatment.
+#' 
+#' benefit= treatment benefit in log odds ratio. 
+#' 
+#' py=the probability of the outcome for each patient, under the treatment actually administered.
+#' 
+#' logit.py= the logit of py.
+#' 
+#' y.observed= the observed outcome
 #' @examples 
-#' temp1 <- F_to_C(50);
-#' temp2 <- F_to_C( c(50, 63, 23) );
+#' dat1=simbinary(100)$dat
+#' head(dat1)
 #' @export
 simbinary=function(Npat=100){
   ### simulate covariates
   library(MASS)
-expit=function(x){ exp(x)/(1 + exp(x))}
+  expit=function(x){ exp(x)/(1 + exp(x))}
 logit=function(x){l=log(x/(1-x)); return(l)}
   # observed true predictors
   x1x2<-mvrnorm(n = Npat, c(0,0), Sigma=matrix(c(1,0.2,0.2,1),2,2))
@@ -44,3 +61,25 @@ logit=function(x){l=log(x/(1-x)); return(l)}
   simdat$y.observed=rbinom(Npat, 1, prob=simdat$py)
   return(list(dat=simdat))
 }
+
+
+#' Expit
+#'
+#' Calculates the expit of a real number
+#' @param x A real number
+#' @return exp(x)/(1+exp(x))
+#' @examples 
+#' expit(2.3)
+#' @export
+expit=function(x){ exp(x)/(1 + exp(x))}
+
+
+#' Logit
+#'
+#' Calculates the expit of a real number between 0 and 1
+#' @param x A real number between 0 and 1
+#' @return log(x/(1-x))
+#' @examples 
+#' logit(0.2)
+#' @export
+logit=function(x){l=log(x/(1-x)); return(l)}

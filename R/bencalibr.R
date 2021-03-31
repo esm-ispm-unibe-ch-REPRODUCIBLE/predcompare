@@ -1,6 +1,6 @@
-#' Calibration for benefit plots
+#' Plotting calibration for benefit of a prediction model
 #'
-#' Produces plot
+#' This function produces plot to illustrate the calibration for benefit for a prediction model
 #' @param data A dataframe
 #' @return Aplot
 #' @examples 

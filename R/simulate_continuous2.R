@@ -1,11 +1,24 @@
-#' Simulate continuous
+#' Simulate data for a prediction model of a continuous outcome
 #'
-#' Calculates measures
-#' @param repeats A dataframe
-#' @return A table
+#' This function generates a dataframe with 6 patient covariates and a continuous outcome 
+#' simulated from a model that uses the covariates. 
+#' @param Npat Number of patients to simulate.
+#' @return The function returns a dataframe with: 
+#' 
+#' x1, x2, x3, x4, x5, x6= patient covariates.
+#' 
+#' t= treatment assignment (0 for control, 1 for active).
+#' 
+#' y.control= the outcome if the patient takes the control treatment. 
+#' 
+#' y.active= the outcome if the patient takes the active treatment. 
+#' 
+#' benefit= the treatment benefit, i.e. y.active-y.control.
+#' 
+#' y.observed= the observed outcome. 
 #' @examples 
-#' temp1 <- F_to_C(50);
-#' temp2 <- F_to_C( c(50, 63, 23) );
+#' dat1=simcont(100)$dat
+#' head(dat1)
 #' @export
 simcont=function(Npat){
   ### simulate covariates
