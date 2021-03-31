@@ -2,7 +2,7 @@
 % Please edit documentation in R/predcompare.R
 \name{predcompare}
 \alias{predcompare}
-\title{Calibraton measures for benefit}
+\title{Calculating measures for calibration for benefit for a prediction model}
 \usage{
 predcompare(
   repeats = 50,
@@ -17,15 +17,70 @@ predcompare(
 )
 }
 \arguments{
-\item{repeats}{A dataframe}
+\item{repeats}{The number of repetitions for the algorithm.}
+
+\item{Ngroups}{The number of groups to split the data.}
+
+\item{X}{A dataframe with patient covariates.}
+
+\item{treat}{A vector with the treatment assignment. This must be 0 (for control treatment)
+or 1 (for active treatment).}
+
+\item{Y}{The observed outcome.}
+
+\item{predicted.treat.1}{A vector with the model predictions for each patient, under the active treatment.
+For the case of a binary outcome this should be in the logit scale.}
+
+\item{predicted.treat.0}{A vector with the model predictions for each patient, under the control treatment.
+For the case of a binary outcome this should be in the logit scale.}
+
+\item{type}{The type of the outcome, "binary" or "continuous".}
+
+\item{measure}{For binary outcomes only. Can be risk difference ("RD") or
+log odds ratios ("logor")}
 }
 \value{
 A table
 }
 \description{
-Calculates measures
+This function calculates a series of measures to assess the calibration for benefit of a prediction model.
+For a continuous outcome it uses a one-to-one matching of patients based on covariates or
+predicted treatment benefit. It also uses a matching in groups using the k-means algorithm. It
+also fits a regression line for benefit. For a binary outcome it also calculates the c-for-benefit.
 }
 \examples{
-temp1 <- F_to_C(50);
-temp2 <- F_to_C( c(50, 63, 23) );
+# continuous outcome 
+dat1=simcont(500)$dat
+lm1=lm(y.observed~(x1+x2+x3)*t, data=dat1)
+dat.t0=dat1; dat.t0$t=0 # a dataset 
+dat.t1=dat1; dat.t1$t=1
+dat1$predict.treat.1=predict(lm1, newdata = dat.t1) # predictions in treatment
+dat1$predict.treat.0=predict(lm1, newdata = dat.t0) # predicions in control
+
+predcompare(repeats=20, Ngroups=c(5:10), X=dat1[,c("x1", "x2","x3")], 
+            Y=dat1$y.observed, 
+            predicted.treat.1 = dat1$predict.treat.1,
+            predicted.treat.0 = dat1$predict.treat.0,
+            treat=dat1$t, type="continuous")
+            
+# binary outcome 
+dat2=simbinary(800)$dat
+head(dat2)
+glm1=glm(y.observed~(x1+x2+x3)*t, data=dat2, family = binomial(link = "logit"))
+dat2.t0=dat2; dat2.t0$t=0 
+dat2.t1=dat2; dat2.t1$t=1
+dat2$predict.treat.1=predict(glm1, newdata = dat2.t1) # predictions in treatment
+dat2$predict.treat.0=predict(glm1, newdata = dat2.t0) # predicions in control
+
+predcompare(repeats=20, Ngroups=c(5:10), X=dat2[,c("x1", "x2","x3")], 
+            Y=dat2$y.observed, 
+            predicted.treat.1 = dat2$predict.treat.1,
+            predicted.treat.0 = dat2$predict.treat.0,
+            treat=dat2$t, type="binary", measure="RD")
+            
+predcompare(repeats=20, Ngroups=c(5:10), X=dat2[,c("x1", "x2","x3")], 
+            Y=dat2$y.observed, 
+            predicted.treat.1 = dat2$predict.treat.1,
+            predicted.treat.0 = dat2$predict.treat.0,
+            treat=dat2$t, type="binary", measure="logor")
 }
