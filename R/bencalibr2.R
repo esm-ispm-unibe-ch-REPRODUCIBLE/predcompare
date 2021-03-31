@@ -1,11 +1,51 @@
 #' Plotting calibration for benefit of a prediction model
 #'
-#' This function produces plot to illustrate the calibration for benefit for a prediction model
-#' @param data A dataframe
-#' @return Aplot
+#' This function produces plot to illustrate the calibration for benefit 
+#' for a prediction model. The data are split in a number of groups according
+#' to the predicted benefit, and within each group the functions estimates
+#' the observed treatment benefit and compares it with the predicted one 
+#' according to the prediction model
+#' @param Ngroups The number of groups to split the data.
+#' @param y.observed The observed outcome.
+#' @param treat A vector with the treatment assignment. This must be 0 (for control treatment)
+#' or 1 (for active treatment).
+#' @param predicted.treat.0 A vector with the model predictions for each patient, under the control treatment.
+#' For the case of a binary outcome this should be in the logit scale.
+#' @param predicted.treat.1 A vector with the model predictions for each patient, under the active treatment.
+#' For the case of a binary outcome this should be in the logit scale.
+#' @param type The type of the outcome, "binary" or "continuous".
+#' @param smoothing.function The method used to smooth the calibration line. Can 
+#' be "lm", "glm", "gam", "loess", "rlm". More details can be found in https://ggplot2.tidyverse.org/reference/geom_smooth.html.
+#' @param measure For binary outcomes only. Can be risk difference ("RD") or 
+#' log odds ratios ("logor")
+#' @return The calibration plot
 #' @examples 
-#' temp1 <- F_to_C(50);
-#' temp2 <- F_to_C( c(50, 63, 23) );
+#' # continuous outcome 
+#' dat1=simcont(200)$dat
+#' head(dat1)
+#' lm1=lm(y.observed~(x1+x2+x3)*t, data=dat1)
+#' dat.t0=dat1; dat.t0$t=0 
+#' dat.t1=dat1; dat.t1$t=1
+#' dat1$predict.treat.1=predict(lm1, newdata = dat.t1) # predictions in treatment
+#' dat1$predict.treat.0=predict(lm1, newdata = dat.t0) # predicions in control
+
+#' bencalibr(data=dat1, Ngroups=10, y.observed, predicted.treat.1=predict.treat.1,
+#'           predicted.treat.0=predict.treat.0, type="continuous", treat=t, 
+#'           smoothing.function = "lm")
+#' # binary outcome 
+#' dat2=simbinary(300)$dat
+#' head(dat2)
+#' glm1=glm(y.observed~(x1+x2+x3)*t, data=dat2, family = binomial(link = "logit"))
+#' dat2.t0=dat2; dat2.t0$t=0 
+#' dat2.t1=dat2; dat2.t1$t=1
+#' dat2$predict.treat.1=predict(glm1, newdata = dat2.t1) # predictions in treatment
+#' dat2$predict.treat.0=predict(glm1, newdata = dat2.t0) # predicions in control
+#' bencalibr(data=dat2, Ngroups=6, y.observed, predicted.treat.1=predict.treat.1,
+#'           predicted.treat.0=predict.treat.0, type="binary", treat=t, 
+#'           smoothing.function = "lm", measure="logor")
+#' bencalibr(data=dat2, Ngroups=6, y.observed, predicted.treat.1=predict.treat.1,
+#'           predicted.treat.0=predict.treat.0, type="binary", treat=t, 
+#'           smoothing.function = "lm", measure="RD")
 #' @export
 bencalibr=function(data=NULL, Ngroups=5, y.observed, treat, 
                    predicted.treat.0, predicted.treat.1 ,type="continuous", 

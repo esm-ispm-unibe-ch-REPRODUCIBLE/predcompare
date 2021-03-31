@@ -21,6 +21,7 @@
 #' head(dat1)
 #' @export
 simcont=function(Npat){
+  library(MASS)
   ### simulate covariates
   expit=function(x){ exp(x)/(1 + exp(x))}
   x1x2<-mvrnorm(n = Npat, c(0,0), Sigma=matrix(c(1,0.2,0.2,1),2,2))
