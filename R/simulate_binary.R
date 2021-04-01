@@ -31,8 +31,8 @@ simbinary=function(Npat=100){
 logit=function(x){l=log(x/(1-x)); return(l)}
   # observed true predictors
   x1x2<-mvrnorm(n = Npat, c(0,0), Sigma=matrix(c(1,0.2,0.2,1),2,2))
-  simdat <- data.frame(x1=x1x2[,1]) # continuous covariate 1
-  simdat$x2<-x1x2[,2] # continuous covariate 2
+  simdat <- data.frame(x1=x1x2[,1])
+  simdat$x2<-x1x2[,2] 
   x3.lin <-rbinom(Npat, 1, prob = 0.2)
   simdat$x3<-rbinom(Npat, 1, prob = expit(x3.lin) )
   

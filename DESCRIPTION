@@ -6,8 +6,8 @@ Authors@R:
            family = "Efthimiou",
            role = c("aut", "cre"),
            email = "oremiou@gmail.com",
-           comment = c(ORCID = "YOUR-ORCID-ID"))
-Description: What the package does (one paragraph).
+           comment = c(ORCID = "0000-0002-0955-7572"))
+Description: This package includes functions for assessing the performance of a prediction model with respect to identifying patient-level treatment benefit.
 License: `use_mit_license()`, `use_gpl3_license()` or friends to
     pick a license
 Encoding: UTF-8
