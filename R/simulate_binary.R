@@ -25,23 +25,19 @@
 #' head(dat1)
 #' @export
 simbinary=function(Npat=100){
-  ### simulate covariates
-  library(MASS)
-  expit=function(x){ exp(x)/(1 + exp(x))}
-logit=function(x){l=log(x/(1-x)); return(l)}
-  # observed true predictors
-  x1x2<-mvrnorm(n = Npat, c(0,0), Sigma=matrix(c(1,0.2,0.2,1),2,2))
-  simdat <- data.frame(x1=x1x2[,1])
-  simdat$x2<-x1x2[,2] 
-  x3.lin <-rbinom(Npat, 1, prob = 0.2)
-  simdat$x3<-rbinom(Npat, 1, prob = expit(x3.lin) )
-  
-  #unobserved true predictors
-  simdat$x4<-rnorm(Npat, 0, 1 )
-  
-  ## observed nuisance parameters
-  simdat$x5<-rnorm(Npat, 0, 1 )
-  simdat$x6<-rnorm(Npat, 0, 1 )
+   ### simulate covariates
+   library(MASS)
+   expit=function(x){ exp(x)/(1 + exp(x))}
+ logit=function(x){l=log(x/(1-x)); return(l)}
+ # observed true predictors
+ x1x2<-mvrnorm(n = Npat, c(0,0), Sigma=matrix(c(1,0.2,0.2,1),2,2))
+ simdat <- data.frame(x1=x1x2[,1])
+ simdat$x2<-x1x2[,2] 
+ simdat$x3<-rbinom(Npat, 1, prob = 0.2)
+ simdat$x4<-rnorm(Npat, 0, 1 )
+ ##  nuisance parameters
+ simdat$x5<-rnorm(Npat, 0, 1 )
+ simdat$x6<-rnorm(Npat, 0, 1 )
 
   
   ### simulate treatment assignment
