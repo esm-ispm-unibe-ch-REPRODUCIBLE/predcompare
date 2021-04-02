@@ -13,7 +13,8 @@ bencalibr(
   predicted.treat.1,
   type = "continuous",
   smoothing.function = "rlm",
-  measure = "RD"
+  measure = "RD",
+  axis.limits = NULL
 )
 }
 \arguments{
@@ -37,6 +38,8 @@ be "lm", "glm", "gam", "loess", "rlm". More details can be found in https://ggpl
 
 \item{measure}{For binary outcomes only. Can be risk difference ("RD") or
 log odds ratios ("logor")}
+
+\item{axis.limits}{Sets the limits of the graph.}
 }
 \value{
 The calibration plot

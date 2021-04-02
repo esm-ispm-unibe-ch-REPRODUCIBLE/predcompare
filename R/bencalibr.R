@@ -18,6 +18,7 @@
 #' be "lm", "glm", "gam", "loess", "rlm". More details can be found in https://ggplot2.tidyverse.org/reference/geom_smooth.html.
 #' @param measure For binary outcomes only. Can be risk difference ("RD") or 
 #' log odds ratios ("logor")
+#' @param axis.limits Sets the limits of the graph. This can be omitted.
 #' @return The calibration plot
 #' @examples 
 #' # continuous outcome 
@@ -31,7 +32,7 @@
 
 #' bencalibr(data=dat1, Ngroups=10, y.observed, predicted.treat.1=predict.treat.1,
 #'           predicted.treat.0=predict.treat.0, type="continuous", treat=t, 
-#'           smoothing.function = "lm")
+#'           smoothing.function = "lm", axis.limits = c(-1, 1.3))
 #' # binary outcome 
 #' dat2=simbinary(300)$dat
 #' head(dat2)
@@ -49,7 +50,7 @@
 #' @export
 bencalibr=function(data=NULL, Ngroups=5, y.observed, treat, 
                    predicted.treat.0, predicted.treat.1 ,type="continuous", 
-                   smoothing.function="rlm", measure = "RD"){
+                   smoothing.function="rlm", measure = "RD", axis.limits=NULL){
   ##smoothing function can be: lm, glm, gam, loess, rlm
   ##measure can be RD or logor
   library(ggplot2)
@@ -98,14 +99,14 @@ bencalibr=function(data=NULL, Ngroups=5, y.observed, treat,
     
     
     p1= suppressMessages(ggplot(dat1, aes(x=pred, y=obs)) +
-      geom_point(size=3, shape=20)+
-      labs(x="Predicted benefit", y="Observed benefit")+ 
-      
-      geom_abline(intercept = 0, slope = 1, color="black", 
-                  linetype="dashed", size=0.5)+
-      geom_errorbar(aes(ymin=obs-se.obs, ymax=obs+se.obs), width=.1) +
-      geom_errorbarh(aes(xmin=pred-se.pred, xmax=pred+se.pred))+
-      geom_smooth(method=smoothing.function, colour="blue",size=0.5)+ theme(aspect.ratio=1)
+                           geom_point(size=3, shape=20)+
+                           labs(x="Predicted benefit", y="Observed benefit")+ 
+                           
+                           geom_abline(intercept = 0, slope = 1, color="black", 
+                                       linetype="dashed", size=0.5)+
+                           geom_errorbar(aes(ymin=obs-se.obs, ymax=obs+se.obs), width=.1) +
+                           geom_errorbarh(aes(xmin=pred-se.pred, xmax=pred+se.pred))+
+                           geom_smooth(method=smoothing.function, colour="blue",size=0.5)+ theme(aspect.ratio=1)
     )
     r1<-max((suppressMessages(layer_scales(p1))$x$range$range))
     r2<-min((suppressMessages(layer_scales(p1)$x$range$range)))
@@ -113,8 +114,9 @@ bencalibr=function(data=NULL, Ngroups=5, y.observed, treat,
     s2<-min((suppressMessages(layer_scales(p1)$y$range$range)))
     t1<-(max(r1,s1))
     t2<-(min(r2,s2))
-    p1<-suppressMessages(p1+coord_equal(xlim=c(t2,t1),ylim=c(t2,t1)))
-  
+    if(is.null(axis.limits)){t11=t1; t12=t2}
+    if(!is.null(axis.limits)){t11=axis.limits[2]; t12=axis.limits[1]}
+    p1<- p1+coord_equal(xlim=c(t12,t11),ylim=c(t12,t11))
     
     return(suppressMessages(print(p1)))
     cat(" Type of outcome: ", type, "\n",
@@ -134,62 +136,64 @@ bencalibr=function(data=NULL, Ngroups=5, y.observed, treat,
       predicted.treat.1=eval(arguments$predicted.treat.1, data)
       data<-data.frame(y.observed, treat, predicted.treat.0, predicted.treat.1) 
     }
-   #### logor ----
+    #### logor ----
     if (measure=="logor"){
-   
-    data$benefit<-data$predicted.treat.1-data$predicted.treat.0
-    d1<-quantile(data$benefit, probs <- seq(0, 1, 1/Ngroups))
-    g1<-list()
-    for (i in 1:Ngroups){g1[[i]]<-data[data$benefit>=d1[i]&data$benefit<d1[i+1],]}
-    predicted<-c()
-    observed<-c()
-    errors.predicted<-c()
-    errors.observed<-c()
-    for (i in 1:Ngroups){
-      predicted=c(predicted,mean(g1[[i]]$benefit))
-      observed=c(observed, 
-                 logit(mean(g1[[i]]$y.observed[g1[[i]]$treat==1]))-
-                   logit(mean(g1[[i]]$y.observed[g1[[i]]$treat==0])))
-      errors.predicted<-c(errors.predicted,sd(g1[[i]]$benefit))
-      errors.observed<-c(errors.observed, 
-                         sqrt(
-                           1/sum(g1[[i]]$y.observed[g1[[i]]$treat==1])
-                           +1/sum(g1[[i]]$y.observed[g1[[i]]$treat==1]==0)
-                           +1/sum(g1[[i]]$y.observed[g1[[i]]$treat==0])
-                           +1/sum(g1[[i]]$y.observed[g1[[i]]$treat==0]==0) ))
-    }
-    
-    dat1<-data.frame("pred"<-predicted, "obs"<-observed, 
-                     "se.pred"<-errors.predicted, "se.obs"<-errors.observed)
-    
-    p1<- ggplot(dat1, aes(x<-pred, y<-obs)) +
-      geom_point(size=3, shape=20)+
-      labs(x="Predicted benefit", y="Observed benefit")+ 
       
-      geom_abline(intercept = 0, slope = 1, color="black", 
-                  linetype="dashed", size=0.5)+
-      geom_errorbar(aes(ymin=obs-se.obs, ymax=obs+se.obs), width=.1) +
-      geom_errorbarh(aes(xmin=pred-se.pred, xmax=pred+se.pred)) +#+ coord_cartesian( xlim = c(-1, 1),  ylim = c(-1, 1))
-      geom_smooth(method="lm", colour="blue",size=0.5)+ theme(aspect.ratio=1)+
-      ggtitle("Calibration for benefit (measure: log odds ratios)")
-    
-    r1<-max((suppressMessages(layer_scales(p1))$x$range$range))
-    r2<-min((suppressMessages(layer_scales(p1)$x$range$range)))
-    s1<-max((suppressMessages(layer_scales(p1)$y$range$range)))
-    s2<-min((suppressMessages(layer_scales(p1)$y$range$range)))
-    
-    t1<-(max(r1,s1))
-    t2<-(min(r2,s2))
-    p1<- p1+coord_equal(xlim=c(t2,t1),ylim=c(t2,t1))
-   
-    cat(" Type of outcome: ", type,"\n", 
-        "Ngroups: ", Ngroups,"\n",
-        "Smoothing.function: ",smoothing.function,"\n", 
-        "Type of measure:", measure, "\n"
-    )
-    
-    return(suppressMessages(print(p1)))
-    
+      data$benefit<-data$predicted.treat.1-data$predicted.treat.0
+      d1<-quantile(data$benefit, probs <- seq(0, 1, 1/Ngroups))
+      g1<-list()
+      for (i in 1:Ngroups){g1[[i]]<-data[data$benefit>=d1[i]&data$benefit<d1[i+1],]}
+      predicted<-c()
+      observed<-c()
+      errors.predicted<-c()
+      errors.observed<-c()
+      for (i in 1:Ngroups){
+        predicted=c(predicted,mean(g1[[i]]$benefit))
+        observed=c(observed, 
+                   logit(mean(g1[[i]]$y.observed[g1[[i]]$treat==1]))-
+                     logit(mean(g1[[i]]$y.observed[g1[[i]]$treat==0])))
+        errors.predicted<-c(errors.predicted,sd(g1[[i]]$benefit))
+        errors.observed<-c(errors.observed, 
+                           sqrt(
+                             1/sum(g1[[i]]$y.observed[g1[[i]]$treat==1])
+                             +1/sum(g1[[i]]$y.observed[g1[[i]]$treat==1]==0)
+                             +1/sum(g1[[i]]$y.observed[g1[[i]]$treat==0])
+                             +1/sum(g1[[i]]$y.observed[g1[[i]]$treat==0]==0) ))
+      }
+      
+      dat1<-data.frame("pred"<-predicted, "obs"<-observed, 
+                       "se.pred"<-errors.predicted, "se.obs"<-errors.observed)
+      
+      p1<- ggplot(dat1, aes(x<-pred, y<-obs)) +
+        geom_point(size=3, shape=20)+
+        labs(x="Predicted benefit", y="Observed benefit")+ 
+        
+        geom_abline(intercept = 0, slope = 1, color="black", 
+                    linetype="dashed", size=0.5)+
+        geom_errorbar(aes(ymin=obs-se.obs, ymax=obs+se.obs), width=.1) +
+        geom_errorbarh(aes(xmin=pred-se.pred, xmax=pred+se.pred)) +#+ coord_cartesian( xlim = c(-1, 1),  ylim = c(-1, 1))
+        geom_smooth(method="lm", colour="blue",size=0.5)+ theme(aspect.ratio=1)+
+        ggtitle("Calibration for benefit (measure: log odds ratios)")
+      
+      r1<-max((suppressMessages(layer_scales(p1))$x$range$range))
+      r2<-min((suppressMessages(layer_scales(p1)$x$range$range)))
+      s1<-max((suppressMessages(layer_scales(p1)$y$range$range)))
+      s2<-min((suppressMessages(layer_scales(p1)$y$range$range)))
+      
+      t1<-(max(r1,s1))
+      t2<-(min(r2,s2))
+      if(is.null(axis.limits)){t11=t1; t12=t2}
+      if(!is.null(axis.limits)){t11=axis.limits[2]; t12=axis.limits[1]}
+      p1<- p1+coord_equal(xlim=c(t12,t11),ylim=c(t12,t11))
+      
+      cat(" Type of outcome: ", type,"\n", 
+          "Ngroups: ", Ngroups,"\n",
+          "Smoothing.function: ",smoothing.function,"\n", 
+          "Type of measure:", measure, "\n"
+      )
+      
+      return(suppressMessages(print(p1)))
+      
     }
     
     #### rd ----
@@ -241,7 +245,9 @@ bencalibr=function(data=NULL, Ngroups=5, y.observed, treat,
       
       t1<-(max(r1,s1))
       t2<-(min(r2,s2))
-      p2<- p2+coord_equal(xlim=c(t2,t1),ylim=c(t2,t1))
+      if(is.null(axis.limits)){t11=t1; t12=t2}
+      if(!is.null(axis.limits)){t11=axis.limits[2]; t12=axis.limits[1]}
+      p2<- p2+coord_equal(xlim=c(t12,t11),ylim=c(t12,t11))
       cat(" Type of outcome: ", type,"\n", 
           "Ngroups: ", Ngroups,"\n",
           "Smoothing.function: ",smoothing.function,"\n",
@@ -251,6 +257,7 @@ bencalibr=function(data=NULL, Ngroups=5, y.observed, treat,
       return(suppressMessages(print(p2)))
     }
     
-    }
+  }
 }
+
 
