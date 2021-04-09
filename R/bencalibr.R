@@ -84,7 +84,10 @@ bencalibr=function(data=NULL, Ngroups=5, y.observed, treat,
     errors.predicted=c()
     errors.observed=c()
     for (i in 1:Ngroups){
-      predicted=c(predicted,mean(g1[[i]]$predicted.benefit))
+      predicted=c(predicted,
+                  mean(g1[[i]]$predicted.treat.1[g1[[i]]$treat==1])-
+                    mean(g1[[i]]$predicted.treat.0[g1[[i]]$treat==0])
+      )
       observed=c(observed, 
                  mean(g1[[i]]$y.observed[g1[[i]]$treat==1])-mean(g1[[i]]$y.observed[g1[[i]]$treat==0])
       )
@@ -127,6 +130,7 @@ bencalibr=function(data=NULL, Ngroups=5, y.observed, treat,
   #### binary ----
   if (type=="binary"){
     logit<-function(x){l<-log(x/(1-x)); return(l)}
+    expit<-function(x){ exp(x)/(1 + exp(x))}
     if(nulldata){data<-data.frame(y.observed, treat,predicted.treat.0, predicted.treat.1 ) }
     if(!nulldata){
       arguments <- as.list(match.call())
@@ -138,8 +142,10 @@ bencalibr=function(data=NULL, Ngroups=5, y.observed, treat,
     }
     #### logor ----
     if (measure=="logor"){
-      
       data$benefit<-data$predicted.treat.1-data$predicted.treat.0
+      data$prob.treat.0=expit(data$predicted.treat.0)
+      data$prob.treat.1=expit(data$predicted.treat.1)
+      
       d1<-quantile(data$benefit, probs <- seq(0, 1, 1/Ngroups))
       g1<-list()
       for (i in 1:Ngroups){g1[[i]]<-data[data$benefit>=d1[i]&data$benefit<d1[i+1],]}
@@ -148,10 +154,16 @@ bencalibr=function(data=NULL, Ngroups=5, y.observed, treat,
       errors.predicted<-c()
       errors.observed<-c()
       for (i in 1:Ngroups){
-        predicted=c(predicted,mean(g1[[i]]$benefit))
+        predicted=c(predicted,
+                    logit(mean(g1[[i]]$prob.treat.1[g1[[i]]$treat==1]))-
+                      logit(mean(g1[[i]]$prob.treat.0[g1[[i]]$treat==0]))
+        )
+        
         observed=c(observed, 
                    logit(mean(g1[[i]]$y.observed[g1[[i]]$treat==1]))-
                      logit(mean(g1[[i]]$y.observed[g1[[i]]$treat==0])))
+        
+        
         errors.predicted<-c(errors.predicted,sd(g1[[i]]$benefit))
         errors.observed<-c(errors.observed, 
                            sqrt(
@@ -200,6 +212,8 @@ bencalibr=function(data=NULL, Ngroups=5, y.observed, treat,
     if (measure=="RD"){
       expit<-function(x){ exp(x)/(1 + exp(x))}
       data$benefit<-expit(data$predicted.treat.1)-expit(data$predicted.treat.0)
+      data$prob.t1=expit(data$predicted.treat.1)
+      data$prob.t0=expit(data$predicted.treat.0)
       d1<-quantile(data$benefit, probs <- seq(0, 1, 1/Ngroups))
       g1<-list()
       for (i in 1:Ngroups){g1[[i]]<-data[data$benefit>=d1[i]&data$benefit<d1[i+1],]}
@@ -208,13 +222,17 @@ bencalibr=function(data=NULL, Ngroups=5, y.observed, treat,
       errors.predicted<-c()
       errors.observed<-c()
       for (i in 1:Ngroups){
-        predicted=c(predicted,mean(g1[[i]]$benefit))
+        predicted=c(predicted,mean(g1[[i]]$prob.t1[g1[[i]]$t==1])-mean(g1[[i]]$prob.t0[g1[[i]]$t==0]))
         
         observed=c(observed, 
                    (mean(g1[[i]]$y.observed[g1[[i]]$t==1]))-
                      (mean(g1[[i]]$y.observed[g1[[i]]$t==0])))
         
         errors.predicted<-c(errors.predicted,sd(expit(g1[[i]]$benefit)))
+        
+        
+        
+        
         errors.observed<-c(errors.observed, 
                            sqrt(
                              sum(g1[[i]]$y.observed[g1[[i]]$t==1])*
@@ -259,5 +277,6 @@ bencalibr=function(data=NULL, Ngroups=5, y.observed, treat,
     
   }
 }
+
 
 
