@@ -39,7 +39,7 @@ be "lm", "glm", "gam", "loess", "rlm". More details can be found in https://ggpl
 \item{measure}{For binary outcomes only. Can be risk difference ("RD") or
 log odds ratios ("logor")}
 
-\item{axis.limits}{Sets the limits of the graph.}
+\item{axis.limits}{Sets the limits of the graph. This can be omitted.}
 }
 \value{
 The calibration plot
@@ -62,7 +62,7 @@ dat1$predict.treat.1=predict(lm1, newdata = dat.t1) # predictions in treatment
 dat1$predict.treat.0=predict(lm1, newdata = dat.t0) # predicions in control
 bencalibr(data=dat1, Ngroups=10, y.observed, predicted.treat.1=predict.treat.1,
           predicted.treat.0=predict.treat.0, type="continuous", treat=t, 
-          smoothing.function = "lm")
+          smoothing.function = "lm", axis.limits = c(-1, 1.3))
 # binary outcome 
 dat2=simbinary(300)$dat
 head(dat2)
