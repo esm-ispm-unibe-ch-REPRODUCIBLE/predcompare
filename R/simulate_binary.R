@@ -24,38 +24,29 @@
 #' dat1=simbinary(100)$dat
 #' head(dat1)
 #' @export
-simbinary=function(Npat=100){
-   ### simulate covariates
-   library(MASS)
-   expit=function(x){ exp(x)/(1 + exp(x))}
- logit=function(x){l=log(x/(1-x)); return(l)}
- # observed true predictors
- x1x2<-mvrnorm(n = Npat, c(0,0), Sigma=matrix(c(1,0.2,0.2,1),2,2))
- simdat <- data.frame(x1=x1x2[,1])
- simdat$x2<-x1x2[,2] 
- simdat$x3<-rbinom(Npat, 1, prob = 0.2)
- simdat$x4<-rnorm(Npat, 0, 1 )
- ##  nuisance parameters
- simdat$x5<-rnorm(Npat, 0, 1 )
- simdat$x6<-rnorm(Npat, 0, 1 )
-
-  
-  ### simulate treatment assignment
-  pt <- 0.5 ## randomized
+simbinary=function (Npat = 100) 
+{
+  library(MASS)
+  # simulate 6 covariates 
+  x1x2 <- mvrnorm(n = Npat, c(0, 0), Sigma = matrix(c(1, 0.2, 
+                                                      0.2, 1), 2, 2))
+  simdat <- data.frame(x1 = x1x2[, 1])
+  simdat$x2 <- x1x2[, 2]
+  simdat$x3 <- rbinom(Npat, 1, prob = 0.2)
+  simdat$x4 <- rnorm(Npat, 0, 1)
+  simdat$x5 <- rnorm(Npat, 0, 1)
+  simdat$x6 <- rnorm(Npat, 0, 1)
+  pt <- 0.5
   simdat$t <- rbinom(Npat, 1, prob = pt)
-  ### outcome at control treatment
-  simdat$logit.control<- with(simdat, -2+0.2*x1+1*x2+0.6*x3+0.3*x4+
-                            0.1*x1^2+0.2*x1*x4+0.2*x4*x4+
-                            rnorm(Npat, 0, 0.1))
-  ### treatment benefit
-  simdat$benefit<-with(simdat, -0.5-0.2*x1-0.1*x2+0.2*x3+0.2*x4+0.5*x1*x4+
-                         0.1*x4*x2+0.1*x2*x3+0.1*x3*x4+
-                         rnorm(Npat, 0, 0.05))
-  simdat$logit.active=with(simdat,logit.control+benefit)
-  simdat$logit.py=with(simdat,logit.control+t*benefit)
-  simdat$py<-expit(simdat$logit.py)
-  simdat$y.observed=rbinom(Npat, 1, prob=simdat$py)
-  return(list(dat=simdat))
+  simdat$logit.control <- with(simdat, -2 + 0.5 * x1 + 0.2 * 
+                                 x2 + 0.3 * x3 + 0.3 * x4 + rnorm(Npat, 0, 0.1))
+  simdat$benefit <- with(simdat, -0.1 - 0.2 * x1 - 0.1 * x2 + 
+                           0.2 * x3 + 0.1 * x4 + rnorm(Npat, 0, 0.01))
+  simdat$logit.active = with(simdat, logit.control + benefit)
+  simdat$logit.py = with(simdat, logit.control + t * benefit)
+  simdat$py <- expit(simdat$logit.py)
+  simdat$y.observed = rbinom(Npat, 1, prob = simdat$py)
+  return(list(dat = simdat))
 }
 
 
