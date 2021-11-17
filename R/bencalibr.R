@@ -34,7 +34,7 @@
 #'           predicted.treat.0=predict.treat.0, type="continuous", treat=t, 
 #'           smoothing.function = "lm", axis.limits = c(-1, 1.3))
 #' # binary outcome 
-#' dat2=simbinary(300)$dat
+#' dat2=simbinary(500)$dat
 #' head(dat2)
 #' glm1=glm(y.observed~(x1+x2+x3)*t, data=dat2, family = binomial(link = "logit"))
 #' dat2.t0=dat2; dat2.t0$t=0 
