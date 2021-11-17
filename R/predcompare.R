@@ -20,7 +20,6 @@
 #' @param bootstraps The number of bootstrap samples to be used for calculating confidence intervals.
 #' @return A table with all estimated measures of performance.
 #' @examples 
-#'  
 #'  # continuous outcome 
 #'  dat0=simcont(500)$dat
 #'  head(dat0)

@@ -52,38 +52,74 @@ predicted treatment benefit. It also uses a matching in groups using the k-means
 also fits a regression line for benefit. For a binary outcome it also calculates the c-for-benefit.
 }
 \examples{
-# continuous outcome 
-dat1=simcont(500)$dat
-lm1=lm(y.observed~(x1+x2+x3)*t, data=dat1)
-dat.t0=dat1; dat.t0$t=0 # a dataset 
-dat.t1=dat1; dat.t1$t=1
-dat1$predict.treat.1=predict(lm1, newdata = dat.t1) # predictions in treatment
-dat1$predict.treat.0=predict(lm1, newdata = dat.t0) # predicions in control
+ # continuous outcome 
+ dat0=simcont(500)$dat
+ head(dat0)
+ # Randomly shuffle the data
+ dat<-dat0[sample(nrow(dat0)),]
+ # Create random folds
+ dat$folds <- cut(seq(1,nrow(dat)),breaks=10,labels=FALSE)
+ 
+ # Obtain out-of-sample predictions
+ dat.out.CV<-list()
+ for (i in 1:10){
+   dat.in.CV=dat[dat$folds!=i,]
+   dat.out.CV[[i]]=dat[dat$folds==i,]
+   dat1<-dat.out.CV[[i]]; dat1$t=1
+   dat0<-dat.out.CV[[i]]; dat0$t=0
+   m1=lm(data=dat.in.CV, y.observed~x1*t+x2*t)
+   dat.out.CV[[i]]$predict.treat.1=predict(newdata=dat1, m1)# predictions in treatment
+   dat.out.CV[[i]]$predict.treat.0=predict(newdata=dat0, m1)# predicions in control
+ }
+ 
+ dat.CV=dat.out.CV[[1]]
+ for (i in 2:10){  dat.CV=rbind(dat.CV,dat.out.CV[[i]])}
+ 
+ # assess model performance
+ predcompare(repeats=20, Ngroups=c(5:10), 
+             X=dat.CV[,c("x1", "x2","x3")], 
+             Y=dat.CV$y.observed, 
+             predicted.treat.1 = dat.CV$predict.treat.1,
+             predicted.treat.0 = dat.CV$predict.treat.0,
+             treat=dat.CV$t, type="continuous")
+ 
+ 
+ # binary outcome 
+ dat0=simbinary(800)$dat
+ head(dat0)
+ 
+ # Randomly shuffle the data
+ dat<-dat0[sample(nrow(dat0)),]
+ # Create random folds
+ dat$folds <- cut(seq(1,nrow(dat)),breaks=10,labels=FALSE)
+ 
+ dat.out.CV<-list()
+ for (i in 1:10){
+   dat.in.CV=dat[dat$folds!=i,]
+   dat.out.CV[[i]]=dat[dat$folds==i,]
+   dat1<-dat.out.CV[[i]]; dat1$t=1
+   dat0<-dat.out.CV[[i]]; dat0$t=0
+   glm1=glm(y.observed~(x1+x2+x3)*t, data=dat.in.CV, family = binomial(link = "logit"))
+   dat.out.CV[[i]]$predict.treat.1=predict(newdata=dat1, glm1)# predictions in treatment
+   dat.out.CV[[i]]$predict.treat.0=predict(newdata=dat0, glm1)# predicions in control
+ }
+ 
+ dat.CV=dat.out.CV[[1]]
+ for (i in 2:10){  dat.CV=rbind(dat.CV,dat.out.CV[[i]])}
+ 
+ 
+ predcompare(repeats=20, Ngroups=c(5:10), X=dat.CV[,c("x1", "x2","x3")], 
+             Y=dat.CV$y.observed, 
+             predicted.treat.1 = dat.CV$predict.treat.1,
+             predicted.treat.0 = dat.CV$predict.treat.0,
+             treat=dat.CV$t, type="binary", measure="RD", bootstraps = 50)
+ 
+ predcompare(repeats=20, Ngroups=c(5:10), X=dat.CV[,c("x1", "x2","x3")], 
+             Y=dat.CV$y.observed, 
+             predicted.treat.1 = dat.CV$predict.treat.1,
+             predicted.treat.0 = dat.CV$predict.treat.0,
+             treat=dat.CV$t, type="binary", measure="logor", bootstraps = 50)
 
-predcompare(repeats=20, Ngroups=c(5:10), X=dat1[,c("x1", "x2","x3")], 
-            Y=dat1$y.observed, 
-            predicted.treat.1 = dat1$predict.treat.1,
-            predicted.treat.0 = dat1$predict.treat.0,
-            treat=dat1$t, type="continuous")
+  
             
-# binary outcome 
-dat2=simbinary(800)$dat
-head(dat2)
-glm1=glm(y.observed~(x1+x2+x3)*t, data=dat2, family = binomial(link = "logit"))
-dat2.t0=dat2; dat2.t0$t=0 
-dat2.t1=dat2; dat2.t1$t=1
-dat2$predict.treat.1=predict(glm1, newdata = dat2.t1) # predictions in treatment
-dat2$predict.treat.0=predict(glm1, newdata = dat2.t0) # predicions in control
-
-predcompare(repeats=20, Ngroups=c(5:10), X=dat2[,c("x1", "x2","x3")], 
-            Y=dat2$y.observed, 
-            predicted.treat.1 = dat2$predict.treat.1,
-            predicted.treat.0 = dat2$predict.treat.0,
-            treat=dat2$t, type="binary", measure="RD")
-            
-predcompare(repeats=20, Ngroups=c(5:10), X=dat2[,c("x1", "x2","x3")], 
-            Y=dat2$y.observed, 
-            predicted.treat.1 = dat2$predict.treat.1,
-            predicted.treat.0 = dat2$predict.treat.0,
-            treat=dat2$t, type="binary", measure="logor")
 }
