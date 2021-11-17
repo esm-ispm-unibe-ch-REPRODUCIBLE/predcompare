@@ -41,7 +41,7 @@ For the case of a binary outcome this should be in the logit scale.}
 log odds ratios ("logor")}
 
 
-\item{bootstraps}{The number of bootstrap samples to be used for calculating confidence intervals for S1 (only used when type is "binary".}
+\item{bootstraps}{The number of bootstrap samples to be used for calculating confidence intervals for S1 (only used when type is "binary").}
 }
 \value{
 A table
