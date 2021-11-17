@@ -13,7 +13,7 @@ predcompare(
   predicted.treat.1,
   predicted.treat.0,
   type = "continuous",
-  measure = "RD", 
+  measure = "RD",
   bootstraps = 500
 )
 }
@@ -40,11 +40,10 @@ For the case of a binary outcome this should be in the logit scale.}
 \item{measure}{For binary outcomes only. Can be risk difference ("RD") or
 log odds ratios ("logor")}
 
-
-\item{bootstraps}{The number of bootstrap samples to be used for calculating confidence intervals for S1 (only used when type is "binary").}
+\item{bootstraps}{The number of bootstrap samples to be used for calculating confidence intervals.}
 }
 \value{
-A table
+A table with all estimated measures of performance.
 }
 \description{
 This function calculates a series of measures to assess the calibration for benefit of a prediction model.

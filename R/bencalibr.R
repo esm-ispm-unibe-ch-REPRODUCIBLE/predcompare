@@ -53,6 +53,7 @@ bencalibr=function (data = NULL, Ngroups = 5, y.observed, treat, predicted.treat
                     measure = "RD", axis.limits = NULL) 
 {
   library(ggplot2)
+  library(MASS)
   se <- function(x) sd(x)/sqrt(length(x))
   nulldata = is.null(data)
   if (type == "continuous") {

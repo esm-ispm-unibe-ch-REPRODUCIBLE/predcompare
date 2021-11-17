@@ -71,6 +71,7 @@ predcompare=function(repeats=50, ### number of repeated uses of the algorithm
 ){
   library(Matching)
   library(Hmisc)
+  library(MASS)
   Ngroups.length=length(Ngroups)
   
   ################ continuous data --------------
